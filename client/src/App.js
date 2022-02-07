@@ -10,7 +10,7 @@ class App extends React.Component {
           <h1>ToDoList.app</h1>
         </header>
 
-        <section className="tasks-section" id="tasks-secktion">
+        <section className="tasks-section" id="tasks-section">
 
           <h2>Tasks</h2>
 
