@@ -1,31 +1,23 @@
 const express = require('express');
-const path = require('path');
 const socket = require('socket.io');
 
 const tasks =[];
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, '/client')));
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '/client/index.html'));
-});
-
-const server = app.listen(8000, () => {
-  console.log('This app running on a localhost: 8000');
+const server = app.listen(process.env.PORT || 8000, () => {
+  console.log('This server is running on a localhost: 8000');
 });
 
 const io = socket(server);
 
 io.on('connection', (socket) => {
   console.log('New client! Its id – ' + socket.id);
-
   io.to(socket.id).emit('updateData', tasks);
 
-  socket.on('addTask', (taskName) => {
-    tasks.push(taskName);
-    socket.broadcast.emit('addTask', taskName);
+  socket.on('addTask', (task) => {
+    tasks.push(task);
+    socket.broadcast.emit('addTask', task);
   });
   socket.on('removeTask', (indexOfTask) => {
     const task = tasks.find((task) => task.id === indexOfTask);
@@ -33,4 +25,8 @@ io.on('connection', (socket) => {
     tasks.splice(index, 1);
     socket.broadcast.emit('removeTask', indexOfTask);
   });
+});
+
+app.use((req, res) => {
+  res.status(404).send('404 not found...');
 });
